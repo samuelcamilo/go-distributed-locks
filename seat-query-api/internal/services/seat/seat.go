@@ -1,15 +1,13 @@
 package seat
 
 import (
-	"context"
-
+	"example.com/seat-query-api/internal/core/models"
 	"example.com/seat-query-api/pkg/logger"
 )
 
 type (
 	IService interface {
-		FindById(ctx context.Context, id int) (err error)
-		Delete(ctx context.Context, id int) (err error)
+		GetAll() (seats []models.SeatModel, err error)
 	}
 
 	services struct {
@@ -21,10 +19,23 @@ func New(log logger.Logger) IService {
 	return &services{log: log}
 }
 
-func (s *services) FindById(ctx context.Context, id int) (err error) {
-	return
-}
+func (s *services) GetAll() (seats []models.SeatModel, err error) {
+	seats = []models.SeatModel{
+		{
+			Id:        1,
+			SessionId: 21323,
+			Elements: []models.Element{
+				{
+					Row:         1,
+					Col:         0,
+					Code:        "O 1",
+					Name:        "Seat O 1",
+					Description: "Cadeira Lovers",
+					Status:      1,
+				},
+			},
+		},
+	}
 
-func (s *services) Delete(ctx context.Context, id int) (err error) {
 	return
 }

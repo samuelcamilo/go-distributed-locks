@@ -5,11 +5,12 @@ import (
 
 	"example.com/seat-query-api/internal/services"
 	"example.com/seat-query-api/pkg/logger"
+	"example.com/seat-query-api/pkg/server"
 )
 
 type (
 	IHandler interface {
-		FindById(w http.ResponseWriter, r *http.Request)
+		GetAll(c server.MuxContext)
 	}
 
 	handlers struct {
@@ -22,8 +23,11 @@ func New(srv *services.Container, log logger.Logger) IHandler {
 	return &handlers{srv: srv, log: log}
 }
 
-func (hdl *handlers) FindById(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
+func (h *handlers) GetAll(c server.MuxContext) {
+	seats, err := h.srv.Seat.GetAll()
+	if err != nil {
+		h.log.Error("error when try to get seats")
+	}
 
-	hdl.log.Info("PathValue: ", id)
+	c.JSON(http.StatusOK, seats)
 }
