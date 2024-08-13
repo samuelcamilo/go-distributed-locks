@@ -5,17 +5,17 @@ import (
 )
 
 type (
-	MuxRouter interface {
+	IMuxRouter interface {
 		Server(port string) http.Server
 		Get(path string, f HandlerFunc)
 	}
-	HandlerFunc func(ctx MuxContext)
+	HandlerFunc func(ctx IMuxContext)
 	serveMux    struct {
 		router *http.ServeMux
 	}
 )
 
-func NewMuxRouter() MuxRouter {
+func NewMuxRouter() IMuxRouter {
 	router := http.NewServeMux()
 
 	return &serveMux{

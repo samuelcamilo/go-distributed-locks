@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	MuxContext interface {
+	IMuxContext interface {
 		Context() context.Context
 		JSON(statusCode int, data any)
 		// Decode(data any) error
@@ -24,7 +24,7 @@ type muxContext struct {
 	r *http.Request
 }
 
-func newMuxContext(w http.ResponseWriter, r *http.Request) MuxContext {
+func newMuxContext(w http.ResponseWriter, r *http.Request) IMuxContext {
 	return &muxContext{
 		w: w,
 		r: r,
