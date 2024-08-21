@@ -1,41 +1,30 @@
-package seat
+package seats
 
 import (
 	"example.com/seat-query-api/internal/core/models"
+	"example.com/seat-query-api/internal/repositories"
 	"example.com/seat-query-api/pkg/logger"
 )
 
 type (
 	IService interface {
-		GetAll() (seats []models.SeatModel, err error)
+		GetById(id int) (seat models.SeatModel, err error)
 	}
 
 	services struct {
-		log logger.Logger
+		log  logger.Logger
+		repo *repositories.Container
 	}
 )
 
-func New(log logger.Logger) IService {
-	return &services{log: log}
+func New(log logger.Logger, repo *repositories.Container) IService {
+	return &services{log: log, repo: repo}
 }
 
-func (s *services) GetAll() (seats []models.SeatModel, err error) {
-	seats = []models.SeatModel{
-		{
-			Id:        1,
-			SessionId: 21323,
-			Elements: []models.Element{
-				{
-					Row:         1,
-					Col:         0,
-					Code:        "O 1",
-					Name:        "Seat O 1",
-					Description: "Cadeira Lovers",
-					Status:      1,
-				},
-			},
-		},
+func (s *services) GetById(id int) (seat models.SeatModel, err error) {
+	seat, err = s.repo.Seat.GetById(id)
+	if err != nil {
+		return seat, nil
 	}
-
 	return
 }

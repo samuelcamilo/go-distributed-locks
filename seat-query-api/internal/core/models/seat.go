@@ -1,17 +1,24 @@
 package models
 
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type (
 	SeatModel struct {
-		Id        int       `json:"id"`
-		SessionId int       `json:"sessionId"`
-		Elements  []Element `json:"elements"`
+		Id        primitive.ObjectID `bson:"_id"`
+		SessionId int32              `bson:"session_id,omitempty" json:"session_id"`
+		Elements  []Element          `bson:"seats,omitempty"      json:"seats"`
+		CreatedAt *time.Time         `bson:"created_at"           json:"created_at"`
 	}
 	Element struct {
-		Row         int    `json:"row"`
-		Col         int    `json:"col"`
-		Code        string `json:"code"`
-		Description string `json:"description"`
-		Name        string `json:"name"`
-		Status      int    `json:"status"`
+		Id     int    `bson:"id"     json:"id"`
+		Line   int    `bson:"line"   json:"line"`
+		Column int    `bson:"column" json:"column"`
+		Label  string `bson:"label"  json:"label"`
+		Type   string `bson:"type"   json:"type"`
+		Status string `bson:"status" json:"status"`
 	}
 )
