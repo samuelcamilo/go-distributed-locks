@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"example.com/seat-query-api/internal/controllers/seats"
-	"example.com/seat-query-api/internal/core/handlers"
+	"example.com/event-query-api/internal/controllers/events"
+	"example.com/event-query-api/internal/core/handlers"
 )
 
 type (
 	Container struct {
-		Seat seats.IController
+		Event events.IController
 	}
 	Options struct {
 		Hdl *handlers.Container
@@ -16,6 +16,6 @@ type (
 
 func New(opts Options) *Container {
 	return &Container{
-		Seat: seats.New(opts.Hdl),
+		Event: events.New(opts.Hdl),
 	}
 }
