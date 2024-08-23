@@ -6,6 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type EventModel struct{}
+
 type (
 	SeatModel struct {
 		Id        primitive.ObjectID `bson:"_id"`

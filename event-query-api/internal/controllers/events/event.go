@@ -1,8 +1,8 @@
-package seats
+package events
 
 import (
-	"example.com/seat-query-api/internal/core/handlers"
-	"example.com/seat-query-api/pkg/server"
+	"example.com/event-query-api/internal/core/handlers"
+	"example.com/event-query-api/pkg/server"
 )
 
 type (
@@ -19,5 +19,5 @@ func New(hdl *handlers.Container) IController {
 }
 
 func (ctrl *controllers) RegisterRouters(r server.IMuxRouter) {
-	r.Get("/seats/sessions/{id}", ctrl.hdl.Seat.GetById)
+	r.Get("/events/{id}", ctrl.hdl.Event.GetById)
 }

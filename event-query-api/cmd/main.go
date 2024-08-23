@@ -3,13 +3,14 @@ package main
 import (
 	"os"
 
-	"example.com/seat-query-api/internal/controllers"
-	"example.com/seat-query-api/internal/core/handlers"
-	"example.com/seat-query-api/internal/repositories"
-	"example.com/seat-query-api/internal/services"
-	"example.com/seat-query-api/pkg/database"
-	"example.com/seat-query-api/pkg/logger"
-	"example.com/seat-query-api/pkg/server"
+	"example.com/event-query-api/internal/core/handlers"
+	"example.com/event-query-api/internal/repositories"
+	"example.com/event-query-api/internal/services"
+	"example.com/event-query-api/pkg/database"
+	"example.com/event-query-api/pkg/logger"
+	"example.com/event-query-api/pkg/server"
+
+	"example.com/event-query-api/internal/controllers"
 )
 
 func main() {
@@ -37,7 +38,7 @@ func main() {
 	log.Info("adding middlewares")
 
 	log.Info("registering routes")
-	controllers.Seat.RegisterRouters(router)
+	controllers.Event.RegisterRouters(router)
 
 	log.Info("starting server in port: ", os.Getenv("PORT"))
 	if err := router.ListenAndServe(os.Getenv("PORT")); err != nil {

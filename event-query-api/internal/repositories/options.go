@@ -3,13 +3,13 @@ package repositories
 import (
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"example.com/seat-query-api/internal/repositories/seats"
-	"example.com/seat-query-api/pkg/logger"
+	"example.com/event-query-api/internal/repositories/events"
+	"example.com/event-query-api/pkg/logger"
 )
 
 type (
 	Container struct {
-		Seat seats.IRepository
+		Event events.IRepository
 	}
 	Options struct {
 		Log    logger.Logger
@@ -19,6 +19,6 @@ type (
 
 func New(opt Options) *Container {
 	return &Container{
-		Seat: seats.New(opt.Log, opt.Client),
+		Event: events.New(opt.Log, opt.Client),
 	}
 }

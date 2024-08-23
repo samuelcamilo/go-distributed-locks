@@ -1,4 +1,4 @@
-module example.com/seat-query-api
+module example.com/event-query-api
 
 go 1.22.2
 
