@@ -24,14 +24,17 @@ func New(log logger.Logger, srv *services.Container) IHandler {
 func (h *handlers) GetById(c server.IMuxContext) {
 	id, err := c.PathIntValue("id")
 	if err != nil {
+		h.log.Error(err)
 		c.BadRequest(err)
 		return
 	}
 
 	seats, err := h.srv.Seat.GetById(id)
 	if err != nil {
-		h.log.Error("error when try to get seats")
+		h.log.Error(err)
+		responseHandler(c, err)
+		return
 	}
 
-	c.Ok(seats)
+	c.OK(seats)
 }
