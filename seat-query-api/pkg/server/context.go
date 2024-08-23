@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,9 +12,11 @@ import (
 type (
 	IMuxContext interface {
 		Context() context.Context
-		PathIntValue(prefix string) (value int, err error)
-		Ok(data any)
+		PathIntValue(prefix string) (int, error)
+		OK(data any)
 		BadRequest(err error)
+		NotFound(err error)
+		InternalServerError(err error)
 		// Decode(data any) error
 		//	GetResponseWriter() http.ResponseWriter
 		//	GetRequestReader() *http.Request
@@ -22,12 +25,9 @@ type (
 		//	Validate(input any) error
 	}
 	ErrorResponse struct {
-		Error struct {
-			Code      int       `json:"code"`
-			Message   string    `json:"message"`
-			Details   string    `json:"details"`
-			Timestamp time.Time `json:"timestamp"`
-		} `json:"error"`
+		Code      int       `json:"code"`
+		Details   string    `json:"details"`
+		Timestamp time.Time `json:"timestamp"`
 	}
 )
 
@@ -37,6 +37,7 @@ type muxContext struct {
 }
 
 func newMuxContext(w http.ResponseWriter, r *http.Request) IMuxContext {
+	w.Header().Set("Content-Type", "application/json")
 	return &muxContext{
 		w: w,
 		r: r,
@@ -47,29 +48,54 @@ func (c *muxContext) Context() context.Context {
 	return c.r.Context()
 }
 
-func (c *muxContext) PathIntValue(prefix string) (value int, err error) {
-	value, err = strconv.Atoi(c.r.PathValue(prefix))
-	return
+func (c *muxContext) PathIntValue(prefix string) (int, error) {
+	prefixValue := c.r.PathValue(prefix)
+	value, err := strconv.Atoi(prefixValue)
+	if err != nil {
+		return 0, fmt.Errorf("Failed to parse '%s' from path to integer", prefixValue)
+	}
+	return value, err
 }
 
-func (c *muxContext) Ok(payload any) {
-	c.w.Header().Set("Content-Type", "applicaion/json")
+func (c *muxContext) OK(data any) {
+	response, _ := json.Marshal(data)
+
 	c.w.WriteHeader(http.StatusOK)
-	response, _ := json.Marshal(payload)
 	c.w.Write(response)
 }
 
 func (c *muxContext) BadRequest(err error) {
-	c.w.Header().Set("Content-Type", "applicaion/json")
-	c.w.WriteHeader(http.StatusBadRequest)
-	payload := ErrorResponse{
-		Error: struct {
-			Code      int       `json:"code"`
-			Message   string    `json:"message"`
-			Details   string    `json:"details"`
-			Timestamp time.Time `json:"timestamp"`
-		}{Code: http.StatusBadRequest, Message: "Bad Request", Details: err.Error(), Timestamp: time.Now()},
-	}
-	response, _ := json.Marshal(payload)
+	statusCode := http.StatusBadRequest
+	response := c.errorHandlerResponse(statusCode, err)
+
+	c.w.WriteHeader(statusCode)
 	c.w.Write(response)
+}
+
+func (c *muxContext) NotFound(err error) {
+	statusCode := http.StatusNotFound
+	response := c.errorHandlerResponse(statusCode, err)
+
+	c.w.WriteHeader(statusCode)
+	c.w.Write(response)
+}
+
+func (c *muxContext) InternalServerError(err error) {
+	statusCode := http.StatusInternalServerError
+	response := c.errorHandlerResponse(statusCode, err)
+
+	c.w.WriteHeader(statusCode)
+	c.w.Write(response)
+}
+
+func (c *muxContext) errorHandlerResponse(statusCode int, err error) []byte {
+	payload := ErrorResponse{
+		Code:      statusCode,
+		Details:   err.Error(),
+		Timestamp: time.Now(),
+	}
+
+	response, _ := json.Marshal(payload)
+
+	return response
 }
