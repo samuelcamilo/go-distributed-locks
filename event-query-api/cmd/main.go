@@ -3,20 +3,18 @@ package main
 import (
 	"os"
 
+	"example.com/event-query-api/internal/controllers"
 	"example.com/event-query-api/internal/core/handlers"
 	"example.com/event-query-api/internal/repositories"
 	"example.com/event-query-api/internal/services"
 	"example.com/event-query-api/pkg/database"
 	"example.com/event-query-api/pkg/logger"
 	"example.com/event-query-api/pkg/server"
-
-	"example.com/event-query-api/internal/controllers"
 )
 
 func main() {
-	log := logger.NewLogrusLogger()
-
 	var (
+		log          = logger.NewLogrusLogger()
 		router       = server.NewMuxRouter()
 		repositories = repositories.New(repositories.Options{
 			Log:    log,

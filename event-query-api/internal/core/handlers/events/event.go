@@ -8,33 +8,44 @@ import (
 
 type (
 	IHandler interface {
-		GetById(c server.IMuxContext)
+		GetAll(ctx server.IMuxContext)
+		GetById(ctx server.IMuxContext)
 	}
-
-	handlers struct {
+	eventHandler struct {
 		log logger.Logger
 		srv *services.Container
 	}
 )
 
 func New(log logger.Logger, srv *services.Container) IHandler {
-	return &handlers{log: log, srv: srv}
+	return &eventHandler{log: log, srv: srv}
 }
 
-func (h *handlers) GetById(c server.IMuxContext) {
-	id, err := c.PathIntValue("id")
+func (h *eventHandler) GetAll(ctx server.IMuxContext) {
+	events, err := h.srv.Event.GetAll()
 	if err != nil {
 		h.log.Error(err)
-		c.BadRequest(err)
+		responseHandler(ctx, err)
+		return
+	}
+
+	ctx.OK(events)
+}
+
+func (h *eventHandler) GetById(ctx server.IMuxContext) {
+	id, err := ctx.PathIntValue("id")
+	if err != nil {
+		h.log.Error(err)
+		ctx.BadRequest(err)
 		return
 	}
 
 	event, err := h.srv.Event.GetById(id)
 	if err != nil {
 		h.log.Error(err)
-		responseHandler(c, err)
+		responseHandler(ctx, err)
 		return
 	}
 
-	c.OK(event)
+	ctx.OK(event)
 }
