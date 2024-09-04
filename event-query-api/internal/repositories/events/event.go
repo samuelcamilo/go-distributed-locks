@@ -16,21 +16,21 @@ type (
 		GetAll(ctx context.Context) (events []models.EventModel, err error)
 		GetById(id int) (event *models.EventModel, err error)
 	}
-	eventRepo struct {
+	repositories struct {
 		log    logger.Logger
 		client *mongo.Client
 	}
 )
 
 func New(log logger.Logger, client *mongo.Client) IRepository {
-	return &eventRepo{
+	return &repositories{
 		log:    log,
 		client: client,
 	}
 }
 
-func (repo *eventRepo) GetAll(ctx context.Context) (events []models.EventModel, err error) {
-	coll := repo.client.Database("events-db").Collection("EVENTS")
+func (r *repositories) GetAll(ctx context.Context) (events []models.EventModel, err error) {
+	coll := r.client.Database("events-db").Collection("EVENTS")
 
 	cursor, err := coll.Find(ctx, bson.D{})
 	defer cursor.Close(ctx)
@@ -42,8 +42,8 @@ func (repo *eventRepo) GetAll(ctx context.Context) (events []models.EventModel, 
 	return
 }
 
-func (repo *eventRepo) GetById(id int) (event *models.EventModel, err error) {
-	coll := repo.client.Database("events-db").Collection("EVENTS")
+func (r *repositories) GetById(id int) (event *models.EventModel, err error) {
+	coll := r.client.Database("events-db").Collection("EVENTS")
 
 	filter := bson.D{primitive.E{Key: "event_id", Value: id}}
 	err = coll.FindOne(context.TODO(), filter).Decode(&event)

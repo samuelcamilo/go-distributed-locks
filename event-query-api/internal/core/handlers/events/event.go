@@ -11,17 +11,17 @@ type (
 		GetAll(ctx server.IMuxContext)
 		GetById(ctx server.IMuxContext)
 	}
-	eventHandler struct {
+	handlers struct {
 		log logger.Logger
 		srv *services.Container
 	}
 )
 
 func New(log logger.Logger, srv *services.Container) IHandler {
-	return &eventHandler{log: log, srv: srv}
+	return &handlers{log: log, srv: srv}
 }
 
-func (h *eventHandler) GetAll(ctx server.IMuxContext) {
+func (h *handlers) GetAll(ctx server.IMuxContext) {
 	events, err := h.srv.Event.GetAll()
 	if err != nil {
 		h.log.Error(err)
@@ -32,7 +32,7 @@ func (h *eventHandler) GetAll(ctx server.IMuxContext) {
 	ctx.OK(events)
 }
 
-func (h *eventHandler) GetById(ctx server.IMuxContext) {
+func (h *handlers) GetById(ctx server.IMuxContext) {
 	id, err := ctx.PathIntValue("id")
 	if err != nil {
 		h.log.Error(err)
