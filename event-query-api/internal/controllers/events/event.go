@@ -19,5 +19,6 @@ func New(hdl *handlers.Container) IController {
 }
 
 func (ctrl *controllers) RegisterRouters(r server.IMuxRouter) {
+	r.Get("/events/", ctrl.hdl.Event.GetAll)
 	r.Get("/events/{id}", ctrl.hdl.Event.GetById)
 }

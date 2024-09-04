@@ -1,6 +1,8 @@
 package events
 
 import (
+	"context"
+
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"example.com/event-query-api/internal/core/models"
@@ -10,20 +12,34 @@ import (
 
 type (
 	IService interface {
-		GetById(id int) (event *models.SeatModel, err error)
+		GetAll() (events []models.EventModel, err error)
+		GetById(id int) (event *models.EventModel, err error)
 	}
 
-	services struct {
+	eventService struct {
 		log  logger.Logger
 		repo *repositories.Container
 	}
 )
 
 func New(log logger.Logger, repo *repositories.Container) IService {
-	return &services{log: log, repo: repo}
+	return &eventService{log: log, repo: repo}
 }
 
-func (s *services) GetById(id int) (event *models.SeatModel, err error) {
+func (s *eventService) GetAll() (events []models.EventModel, err error) {
+	events, err = s.repo.Event.GetAll(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+
+	if len(events) < 1 {
+		return []models.EventModel{}, nil
+	}
+
+	return
+}
+
+func (s *eventService) GetById(id int) (event *models.EventModel, err error) {
 	event, err = s.repo.Event.GetById(id)
 	if err == mongo.ErrNoDocuments {
 		return nil, ErrorEventNotFound
