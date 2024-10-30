@@ -22,14 +22,14 @@ func New(log logger.Logger, srv *services.Container) IHandler {
 }
 
 func (h *handlers) GetAll(ctx server.IMuxContext) {
-	tickets, err := h.srv.Ticket.GetAll(ctx.Context())
+	ts, err := h.srv.Ticket.GetAll(ctx.Context())
 	if err != nil {
 		h.log.Error(err)
 		responseHandler(ctx, err)
 		return
 	}
 
-	ctx.OK(tickets)
+	ctx.OK(ts)
 }
 
 func (h *handlers) GetById(ctx server.IMuxContext) {
@@ -40,12 +40,12 @@ func (h *handlers) GetById(ctx server.IMuxContext) {
 		return
 	}
 
-	ticket, err := h.srv.Ticket.GetById(ctx.Context(), id)
+	t, err := h.srv.Ticket.GetById(ctx.Context(), id)
 	if err != nil {
 		h.log.Error(err)
 		responseHandler(ctx, err)
 		return
 	}
 
-	ctx.OK(ticket)
+	ctx.OK(t)
 }
